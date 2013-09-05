@@ -1,0 +1,48 @@
+﻿<!--
+ /* Copyright (C) 2013 Philippos Papaphilippou, Philokypros Ioulianou
+ *
+ * @version    : 1.0
+ * @author     : Philippos Papaphilippou (philippos.info) ppapap01[at]cs.ucy.ac.cy
+ * @author     : Philokypros Ioulianou                    fiouli01[at]cs.ucy.ac.cy
+ *
+ * Data Management Systems Laboratory (DMSL)
+ * Department of Computer Science
+ * University of Cyprus
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * Υou should have received a copy of the GNU General Public License
+ * along with this program. If not, see<http://www.gnu.org/licenses/> .
+ *
+ * **PEDOMETER CODE was found freely available at a public domain at 
+ * http://stackoverflow.com/questions/9895402/wp7-sdk-pedometer
+ * 
+ * ***The overall code about sensor usage is based heavily on WP8 dev samples.
+ */
+-->
+<Application
+    x:Class="PhoneApp1.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone">
+
+    <!--Application Resources-->
+    <Application.Resources>
+        <local:LocalizedStrings xmlns:local="clr-namespace:PhoneApp1" x:Key="LocalizedStrings"/>
+    </Application.Resources>
+
+    <Application.ApplicationLifetimeObjects>
+        <!--Required object that handles lifetime events for the application-->
+        <shell:PhoneApplicationService
+            Launching="Application_Launching" Closing="Application_Closing"
+            Activated="Application_Activated" Deactivated="Application_Deactivated"/>
+    </Application.ApplicationLifetimeObjects>
+
+</Application>

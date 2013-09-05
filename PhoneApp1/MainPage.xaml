@@ -1,0 +1,169 @@
+﻿<!--
+ /* Copyright (C) 2013 Philippos Papaphilippou, Philokypros Ioulianou
+ *
+ * @version    : 1.0
+ * @author     : Philippos Papaphilippou (philippos.info) ppapap01[at]cs.ucy.ac.cy
+ * @author     : Philokypros Ioulianou                    fiouli01[at]cs.ucy.ac.cy
+ *
+ * Data Management Systems Laboratory (DMSL)
+ * Department of Computer Science
+ * University of Cyprus
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * Υou should have received a copy of the GNU General Public License
+ * along with this program. If not, see<http://www.gnu.org/licenses/> .
+ *
+ * **PEDOMETER CODE was found freely available at a public domain at 
+ * http://stackoverflow.com/questions/9895402/wp7-sdk-pedometer
+ * 
+ * ***The overall code about sensor usage is based heavily on WP8 dev samples.
+ */
+-->
+    
+<phone:PhoneApplicationPage
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    x:Class="PhoneApp1.MainPage"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- LOCALIZATION NOTE:
+            To localize the displayed strings copy their values to appropriately named
+            keys in the app's neutral language resource file (AppResources.resx) then
+            replace the hard-coded text value between the attributes' quotation marks
+            with the binding clause whose path points to that string name.
+
+            For example:
+
+                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
+
+            This binding points to the template's string resource named "ApplicationTitle".
+
+            Adding supported languages in the Project Properties tab will create a
+            new resx file per language that can carry the translated values of your
+            UI strings. The binding in these examples will cause the value of the
+            attributes to be drawn from the .resx file that matches the
+            CurrentUICulture of the app at run time.
+         -->
+
+        <!--Uncomment to see an alignment grid to help ensure your controls are
+            aligned on common boundaries.  The image has a top margin of -32px to
+            account for the System Tray. Set this to 0 (or remove the margin altogether)
+            if the System Tray is hidden.
+
+            Before shipping remove this XAML and the image itself.-->
+        <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock x:Name="txtcaption" Text="Geolocation for Windows Phone" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0,159,0" Height="32"/>
+        </StackPanel>
+
+        <!--Calibration UI-->
+        <StackPanel Name="calibrationStackPanel" Background="Black" Opacity="1" Visibility="Collapsed">
+            <Image Source="/images/calibrate_compass.png" Opacity=".95" HorizontalAlignment="Center"/>
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center">The compass on your device needs to be calibrated.
+                Hold the device in front of you and sweep it through a figure 8 pattern as shown
+                until the calibration is complete.</TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0,10" HorizontalAlignment="Center">
+                <TextBlock>heading accuracy:</TextBlock>
+                <TextBlock Name="calibrationTextBlock">0.0°</TextBlock>
+            </StackPanel>
+            <Button Name="calibrationButton" Content="Done" Click="calibrationButton_Click"></Button>
+        </StackPanel>
+        <!--End Calibration UI-->
+
+        <StackPanel Name="stepStackPanel" Opacity="1" Visibility="Collapsed" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="Step length" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock Text="Please select step length below:" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}" FontSize="32"/>
+            <RadioButton x:Name="rd1" Content="50 cm" HorizontalAlignment="Left" VerticalAlignment="Top" Height="70" Width="446" TabNavigation="Cycle" IsChecked="True"/>
+            <RadioButton x:Name="rd2" Content="60 cm" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="70" Width="446"/>
+            <RadioButton x:Name="rd3" Content="70 cm" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="70" Width="446"/>
+            <RadioButton x:Name="rd4" Content="80 cm" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="70" Width="446"/>
+            <RadioButton x:Name="rd5" Content="90 cm" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="70" Width="446"/>
+            <RadioButton x:Name="rd6" Content="Custom length:" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="70" Width="446"/>
+
+            <TextBox x:Name="txtcustomstep" Height="75" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263"/>
+            <Button Content="OK" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="77" Width="456" Click="stepButton_Click"/>
+
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0">
+            <TextBlock HorizontalAlignment="Left" Margin="30,481,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+            	<Run Text="Accellerometer:  "/>
+            	<LineBreak/>
+            	<Run Text="x"/>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Left" Height="28" Margin="30,527,0,0" TextWrapping="Wrap" Text="y" VerticalAlignment="Top" Width="42"/>
+            <TextBlock HorizontalAlignment="Left" Margin="29,552,0,0" TextWrapping="Wrap" Text="z" VerticalAlignment="Top"/>
+            <maps:Map x:Name="map" ZoomLevel="10" Center="35.144792, 33.411099" HorizontalAlignment="Left" VerticalAlignment="Top" Height="481" Width="456" ZoomLevelChanged="map_ZoomLevelChanged"/>
+            <TextBlock HorizontalAlignment="Left" Margin="183,481,0,0" TextWrapping="Wrap" Text="Compass:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="x" HorizontalAlignment="Left" Height="28" Margin="60,508,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="118"/>
+            <TextBlock x:Name="y" HorizontalAlignment="Left" Height="22" Margin="60,529,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="118"/>
+            <TextBlock x:Name="z" HorizontalAlignment="Left" Height="29" Margin="60,555,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="118"/>
+            <TextBlock x:Name="truel" HorizontalAlignment="Left" Height="24" Margin="183,508,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="84"/>
+            <TextBlock x:Name="latbox" HorizontalAlignment="Left" Margin="301,532,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="33" Height="27">
+            	<Run Text="Lat:"/>
+            	<LineBreak/>
+            	<Run/>
+            </TextBlock>
+            <TextBlock x:Name="txtlat" HorizontalAlignment="Left" Margin="343,532,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="113" Height="27"/>
+            <TextBlock x:Name="lonbox" HorizontalAlignment="Left" Margin="297,559,0,0" TextWrapping="Wrap" Text="Lon:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="txtlon" HorizontalAlignment="Left" Margin="343,559,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="113" Height="27"/>
+            <TextBlock HorizontalAlignment="Left" Margin="183,532,0,0" TextWrapping="Wrap" Text="Pedometer:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="steps" HorizontalAlignment="Left" Margin="183,557,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="0" Width="101"/>
+            <TextBlock x:Name="txtstep" TextWrapping="Wrap" Margin="320,509,58,56" Text="50 cm"/>
+        </Grid>
+        <TextBlock x:Name="txtst" HorizontalAlignment="Left" Margin="331,480,0,0" TextWrapping="Wrap" Text="Step length:" VerticalAlignment="Top" Height="27" Width="140" Grid.Row="1"/>
+        <TextBlock x:Name="statebox" HorizontalAlignment="Left" Margin="28,40,0,0" TextWrapping="Wrap" Text="State:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="statusbox" HorizontalAlignment="Left" Margin="84,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="387" Height="28"/>
+
+    </Grid>
+
+    <toolkit:TransitionService.NavigationInTransition>
+        <toolkit:NavigationInTransition>
+            <toolkit:NavigationInTransition.Backward>
+                <toolkit:TurnstileTransition Mode="BackwardIn"/>
+            </toolkit:NavigationInTransition.Backward>
+            <toolkit:NavigationInTransition.Forward>
+                <toolkit:TurnstileTransition Mode="ForwardIn"/>
+            </toolkit:NavigationInTransition.Forward>
+        </toolkit:NavigationInTransition>
+    </toolkit:TransitionService.NavigationInTransition>
+
+
+    <!--Application bar-->
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar x:Name="appbar" IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton x:Name="onoff" Click="onoff_Click" IconUri="/Assets/AppBar/startstop.png" Text="on/off"/>
+            <shell:ApplicationBarIconButton x:Name="bt1" Click="Zoom_in" IconUri="/Assets/AppBar/zin.png" Text="Zoom in"/>
+            <shell:ApplicationBarIconButton x:Name="bt2" Click="Zoom_out" IconUri="/Assets/AppBar/zout.png" Text="Zoom out"/>
+            <shell:ApplicationBarIconButton x:Name="step" IconUri="/Assets/AppBar/feature.settings.png" IsEnabled="True" Text="Step" Click="step_bt"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+</phone:PhoneApplicationPage>
